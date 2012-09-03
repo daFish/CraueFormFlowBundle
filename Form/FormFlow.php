@@ -53,6 +53,14 @@ class FormFlow {
 		$this->formFactory = $formFactory;
 	}
 
+    /**
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
 	public function setRequest(Request $request) {
 		$this->request = $request;
 	}
