@@ -1,6 +1,6 @@
 <?php
 
-namespace Craue\FormFlowBundle;
+namespace Craue\FormFlowBundle\Tests\IntegrationTestBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -9,5 +9,5 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  * @copyright 2011-2013 Christian Raue
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
-class CraueFormFlowBundle extends Bundle {
+class IntegrationTestBundle extends Bundle {
 }

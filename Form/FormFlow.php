@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @author Christian Raue <christian.raue@gmail.com>
  * @author Marcus Stöhr <dafish@soundtrack-board.de>
  * @author Toni Uebernickel <tuebernickel@gmail.com>
- * @copyright 2011-2012 Christian Raue
+ * @copyright 2011-2013 Christian Raue
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
 class FormFlow {
@@ -371,6 +371,11 @@ class FormFlow {
 	}
 
 	public function bind($formData) {
+		if ($this->eventDispatcher->hasListeners(FormFlowEvents::PRE_BIND)) {
+			$event = new PreBindEvent($this);
+			$this->eventDispatcher->dispatch(FormFlowEvents::PRE_BIND, $event);
+		}
+
 		if (!$this->allowDynamicStepNavigation && $this->request->isMethod('GET')) {
 			$this->reset();
 			return;
@@ -381,17 +386,16 @@ class FormFlow {
 			return;
 		}
 
-		if ($this->eventDispatcher->hasListeners(FormFlowEvents::PRE_BIND)) {
-			$event = new PreBindEvent($this);
-			$this->eventDispatcher->dispatch(FormFlowEvents::PRE_BIND, $event);
-		}
-
 		$requestedStep = $this->determineCurrentStep();
 
-		// ensure that requested step fits the current progress
-		if ($requestedStep > 1 && !$this->isStepDone($requestedStep - 1)) {
-			$this->reset();
-			return;
+		// ensure that the requested step fits the current progress
+		if ($requestedStep > $this->getFirstStep()) {
+			for ($step = $this->getFirstStep(); $step < $requestedStep; ++$step) {
+				if (!$this->isStepDone($step)) {
+					$this->reset();
+					return;
+				}
+			}
 		}
 
 		$this->currentStep = $requestedStep;
